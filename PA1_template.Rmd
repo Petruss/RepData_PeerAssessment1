@@ -1,0 +1,68 @@
+ "RepData_PeerAssessment1"
+---
+####check and create working directory
+
+```{r}
+if (!file.exists("projectdata")) {dir.create("projectdata")}
+```
+####Download file and unzip file to folder
+
+```{r}
+fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+download.file(fileUrl, destfile = "./projectdata/Dataset.zip", mode = "wb")
+unzip<- unzip( "./projectdata/Dataset.zip", exdir= "projectdata")
+```
+
+####set working directory to folder with unzipped data
+```{r}
+setwd("./projectdata")
+fitdata <- read.csv("activity.csv")
+fitdata1<- na.omit(fitdata)
+```
+####daily steps
+```{r}
+Dailysteps<- aggregate(fitdata1[,"steps"], list(fitdata1$date), FUN =sum)
+```
+####Summary Statistics, #daily mean and Median steps
+```{r}
+summary(fitdata1)
+aggregate(fitdata1[,"steps"], list(fitdata1$date), FUN=mean)
+aggregate(fitdata1[,"steps"], list(fitdata1$date), FUN=median)
+```
+####Histogram of Daily step totals.
+```{r}
+names(Dailysteps) <- c("Date", "Step_tot") 
+hist(Dailysteps$Step_tot, main ="Daily Steps Histogram")
+```
+####What is the average daily activity pattern
+```{r}
+interval.steps <- aggregate(steps ~ interval, data = fitdata1, FUN = mean)
+plot(interval.steps, type = "l")
+interval.steps[max(interval.steps$steps),]
+```
+####Total  of missing Values
+```{r}
+sum(is.na(fitdata))
+```
+####Replace missing(N/A's) values
+```{r}
+fitdata$steps[is.na(fitdata$steps)]<-0
+```
+####Plot New Hist without missing data
+```{r}
+Dailysteps_all<- aggregate(fitdata[,"steps"], list(fitdata$date), FUN =sum)
+names(Dailysteps_all) <- c("Date", "Step.tot") 
+hist(Dailysteps_all$Step.tot, main ="Daily Steps Histogram")
+```
+####Summary Statistics, daily mean and median steps,
+```{r}
+summary(fitdata)
+aggregate(fitdata[,"steps"], list(fitdata$date), FUN=mean)
+aggregate(fitdata[,"steps"], list(fitdata$date), FUN=median)
+
+
+
+
+
+
+
